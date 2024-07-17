@@ -17,10 +17,20 @@ func pushPop[T constraints.Ordered](t *testing.T, val T) {
 
 	t.Run("TestPushPop", func(t *testing.T) {
 		queue.Push(val)
+
+		assert.Equal(t, 1, queue.Len())
+
+		peek, err := queue.Peek()
+		if assert.NoError(t, err) {
+			assert.Equal(t, val, peek)
+		}
+
 		actual, err := queue.Pop()
 		if assert.NoError(t, err) {
 			assert.Equal(t, val, actual)
 		}
+
+		assert.Equal(t, 0, queue.Len())
 	})
 }
 
@@ -65,6 +75,8 @@ func testSort[T constraints.Ordered](t *testing.T, testId int, elems []T) {
 			queue.Push(elem)
 		}
 
+		assert.Equal(t, len(expected), queue.Len())
+
 		actual := make([]T, len(elems))
 
 		for i := range elems {
@@ -75,6 +87,8 @@ func testSort[T constraints.Ordered](t *testing.T, testId int, elems []T) {
 				assert.Equal(t, expected[i], actual[i])
 			}
 		}
+
+		assert.Equal(t, 0, queue.Len())
 	})
 }
 
@@ -117,6 +131,8 @@ func TestEmptyQueuePop(t *testing.T) {
 		_, err := queue.Pop()
 
 		assert.Equal(t, errors.New("empty queue"), err)
+
+		assert.Equal(t, 0, queue.Len())
 	})
 }
 
@@ -126,20 +142,30 @@ func TestPushPopPushPop(t *testing.T) {
 	t.Run("1", func(t *testing.T) {
 		queue.Push(1)
 		queue.Push(2)
+		assert.Equal(t, 2, queue.Len())
+
 		actual, err := queue.Pop()
 		if assert.NoError(t, err) {
 			assert.Equal(t, 1, actual)
 		}
 
+		assert.Equal(t, 1, queue.Len())
+
 		queue.Push(3)
+		assert.Equal(t, 2, queue.Len())
+
 		actual, err = queue.Pop()
 		if assert.NoError(t, err) {
 			assert.Equal(t, 2, actual)
 		}
 
+		assert.Equal(t, 1, queue.Len())
+
 		actual, err = queue.Pop()
 		if assert.NoError(t, err) {
 			assert.Equal(t, 3, actual)
 		}
+
+		assert.Equal(t, 0, queue.Len())
 	})
 }

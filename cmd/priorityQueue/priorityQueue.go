@@ -8,6 +8,8 @@ import (
 type Queue[T any] interface {
 	Push(T)
 	Pop() (T, error)
+	Peek() (T, error)
+	Len() int
 }
 
 type PriorityQueue[T constraints.Ordered] struct {
@@ -81,6 +83,18 @@ func (q *PriorityQueue[T]) Pop() (top T, err error) {
 	q.down(0)
 
 	return
+}
+
+func (q *PriorityQueue[T]) Len() int {
+	return len(q.data)
+}
+
+func (q *PriorityQueue[T]) Peek() (top T, err error) {
+	if len(q.data) == 0 {
+		return top, errors.New("empty queue")
+	}
+
+	return q.data[0], nil
 }
 
 func NewPriorityQueue[T constraints.Ordered]() *PriorityQueue[T] {
