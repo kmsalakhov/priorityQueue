@@ -1,6 +1,7 @@
 package priorityQueue
 
 import (
+	"errors"
 	"fmt"
 	"golang.org/x/exp/constraints"
 	"math/rand"
@@ -107,4 +108,38 @@ func TestSortBigInts(t *testing.T) {
 	}
 
 	testSort(t, 1, arr)
+}
+
+func TestEmptyQueuePop(t *testing.T) {
+	queue := NewPriorityQueue[int]()
+
+	t.Run("1", func(t *testing.T) {
+		_, err := queue.Pop()
+
+		assert.Equal(t, errors.New("empty queue"), err)
+	})
+}
+
+func TestPushPopPushPop(t *testing.T) {
+	queue := NewPriorityQueue[int]()
+
+	t.Run("1", func(t *testing.T) {
+		queue.Push(1)
+		queue.Push(2)
+		actual, err := queue.Pop()
+		if assert.NoError(t, err) {
+			assert.Equal(t, 1, actual)
+		}
+
+		queue.Push(3)
+		actual, err = queue.Pop()
+		if assert.NoError(t, err) {
+			assert.Equal(t, 2, actual)
+		}
+
+		actual, err = queue.Pop()
+		if assert.NoError(t, err) {
+			assert.Equal(t, 3, actual)
+		}
+	})
 }
