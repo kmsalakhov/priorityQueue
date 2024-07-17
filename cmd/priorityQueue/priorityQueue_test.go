@@ -52,26 +52,14 @@ func TestPushPopString(t *testing.T) {
 	pushPop[string](t, "Hello world!")
 }
 
-func testSort[T constraints.Ordered](t *testing.T, testId int, elems []T) {
+func testSort[T int | string | float64](t *testing.T, testId int, elems []T) {
 	queue := New[T]()
 
 	t.Run("#"+strconv.Itoa(testId), func(t *testing.T) {
 		expected := make([]T, len(elems))
 		copy(expected, elems)
 
-		switch v := any(expected[0]).(type) {
-		case int:
-			expected := any(expected).([]int)
-			sort.Ints(expected)
-		case string:
-			expected := any(expected).([]string)
-			sort.Strings(expected)
-		case float64:
-			expected := any(expected).([]float64)
-			sort.Float64s(expected)
-		default:
-			panic(fmt.Sprintf("unknown type %T", v))
-		}
+		sortSlice(expected)
 
 		for _, elem := range elems {
 			queue.Push(elem)
@@ -92,6 +80,22 @@ func testSort[T constraints.Ordered](t *testing.T, testId int, elems []T) {
 
 		assert.Equal(t, 0, queue.Len())
 	})
+}
+
+func sortSlice[T int | string | float64](expected []T) {
+	switch v := any(expected[0]).(type) {
+	case int:
+		expected := any(expected).([]int)
+		sort.Ints(expected)
+	case string:
+		expected := any(expected).([]string)
+		sort.Strings(expected)
+	case float64:
+		expected := any(expected).([]float64)
+		sort.Float64s(expected)
+	default:
+		panic(fmt.Sprintf("unknown type %T", v))
+	}
 }
 
 func TestSortSmallInts(t *testing.T) {
@@ -188,6 +192,30 @@ func testFromSortedSlice[T constraints.Ordered](t *testing.T, testId int, slice 
 		assert.Equal(t, 0, queue.Len())
 		assert.Equal(t, true, queue.IsEmpty())
 	})
+}
+
+func testSortSlice[T int | string | float64](t *testing.T, testId int, slice []T) {
+	t.Run("#"+strconv.Itoa(testId), func(t *testing.T) {
+		expected := make([]T, len(slice))
+		copy(expected, slice)
+
+		actual := make([]T, len(slice))
+		copy(actual, slice)
+
+		sortSlice(expected)
+		Sort(actual)
+
+		assert.Equal(t, expected, actual)
+	})
+}
+
+func TestSort(t *testing.T) {
+	testSortSlice(t, 1, []int{5, 3, 2, 1})
+	testSortSlice(t, 2, []int{5, 3, 2, 1, 7, -13})
+	testSortSlice(t, 3, []int{3, 3, 3, 3})
+	testSortSlice(t, 4, []int{-11, -12, 5, 77, 33})
+	testSortSlice(t, 5, []string{"B", "A", "F", "C"})
+	testSortSlice(t, 6, []string{"BRO", "liKE", "Type", "HELLO wOrLd!!", "*"})
 }
 
 func TestFromSortedSlice(t *testing.T) {

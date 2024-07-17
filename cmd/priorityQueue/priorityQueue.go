@@ -109,8 +109,18 @@ func FromSortedSlice[T constraints.Ordered](slice []T) *PriorityQueue[T] {
 	return &PriorityQueue[T]{data: data}
 }
 
+func FromSlice[T constraints.Ordered](slice []T) *PriorityQueue[T] {
+	queue := new(PriorityQueue[T])
+
+	for _, val := range slice {
+		queue.Push(val)
+	}
+
+	return queue
+}
+
 func Sort[T constraints.Ordered](slice []T) {
-	queue := FromSortedSlice(slice)
+	queue := FromSlice(slice)
 
 	for i := range slice {
 		slice[i], _ = queue.Pop()
