@@ -18,6 +18,7 @@ func pushPop[T constraints.Ordered](t *testing.T, val T) {
 	t.Run("TestPushPop", func(t *testing.T) {
 		queue.Push(val)
 
+		assert.Equal(t, false, queue.IsEmpty())
 		assert.Equal(t, 1, queue.Len())
 
 		peek, err := queue.Peek()
@@ -31,6 +32,7 @@ func pushPop[T constraints.Ordered](t *testing.T, val T) {
 		}
 
 		assert.Equal(t, 0, queue.Len())
+		assert.Equal(t, true, queue.IsEmpty())
 	})
 }
 
@@ -184,6 +186,7 @@ func testFromSortedSlice[T constraints.Ordered](t *testing.T, testId int, slice 
 		}
 
 		assert.Equal(t, 0, queue.Len())
+		assert.Equal(t, true, queue.IsEmpty())
 	})
 }
 

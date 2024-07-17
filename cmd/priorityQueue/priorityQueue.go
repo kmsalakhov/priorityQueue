@@ -10,6 +10,7 @@ type Queue[T any] interface {
 	Pop() (T, error)
 	Peek() (T, error)
 	Len() int
+	IsEmpty() bool
 }
 
 type PriorityQueue[T constraints.Ordered] struct {
@@ -114,4 +115,8 @@ func Sort[T constraints.Ordered](slice []T) {
 	for i := range slice {
 		slice[i], _ = queue.Pop()
 	}
+}
+
+func (q *PriorityQueue[T]) IsEmpty() bool {
+	return q.Len() == 0
 }
