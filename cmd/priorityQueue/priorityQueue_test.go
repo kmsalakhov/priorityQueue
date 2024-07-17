@@ -13,7 +13,7 @@ import (
 )
 
 func pushPop[T constraints.Ordered](t *testing.T, val T) {
-	queue := NewPriorityQueue[T]()
+	queue := New[T]()
 
 	t.Run("TestPushPop", func(t *testing.T) {
 		queue.Push(val)
@@ -51,7 +51,7 @@ func TestPushPopString(t *testing.T) {
 }
 
 func testSort[T constraints.Ordered](t *testing.T, testId int, elems []T) {
-	queue := NewPriorityQueue[T]()
+	queue := New[T]()
 
 	t.Run("#"+strconv.Itoa(testId), func(t *testing.T) {
 		expected := make([]T, len(elems))
@@ -125,7 +125,7 @@ func TestSortBigInts(t *testing.T) {
 }
 
 func TestEmptyQueuePop(t *testing.T) {
-	queue := NewPriorityQueue[int]()
+	queue := New[int]()
 
 	t.Run("1", func(t *testing.T) {
 		_, err := queue.Pop()
@@ -137,7 +137,7 @@ func TestEmptyQueuePop(t *testing.T) {
 }
 
 func TestPushPopPushPop(t *testing.T) {
-	queue := NewPriorityQueue[int]()
+	queue := New[int]()
 
 	t.Run("1", func(t *testing.T) {
 		queue.Push(1)
@@ -168,4 +168,28 @@ func TestPushPopPushPop(t *testing.T) {
 
 		assert.Equal(t, 0, queue.Len())
 	})
+}
+
+func testFromSortedSlice[T constraints.Ordered](t *testing.T, testId int, slice []T) {
+	t.Run("#"+strconv.Itoa(testId), func(t *testing.T) {
+		queue := FromSortedSlice(slice)
+		assert.Equal(t, len(slice), queue.Len())
+
+		for _, expected := range slice {
+			actual, err := queue.Pop()
+
+			if assert.NoError(t, err) {
+				assert.Equal(t, expected, actual)
+			}
+		}
+
+		assert.Equal(t, 0, queue.Len())
+	})
+}
+
+func TestFromSortedSlice(t *testing.T) {
+	testFromSortedSlice(t, 1, []int{1, 2, 3, 4, 5})
+	testFromSortedSlice(t, 2, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+	testFromSortedSlice(t, 3, []uint{1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+	testFromSortedSlice(t, 4, []string{"a", "b", "c", "d"})
 }

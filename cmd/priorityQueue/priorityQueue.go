@@ -97,6 +97,21 @@ func (q *PriorityQueue[T]) Peek() (top T, err error) {
 	return q.data[0], nil
 }
 
-func NewPriorityQueue[T constraints.Ordered]() *PriorityQueue[T] {
+func New[T constraints.Ordered]() *PriorityQueue[T] {
 	return &PriorityQueue[T]{data: make([]T, 0)}
+}
+
+func FromSortedSlice[T constraints.Ordered](slice []T) *PriorityQueue[T] {
+	data := make([]T, len(slice))
+	copy(data, slice)
+
+	return &PriorityQueue[T]{data: data}
+}
+
+func Sort[T constraints.Ordered](slice []T) {
+	queue := FromSortedSlice(slice)
+
+	for i := range slice {
+		slice[i], _ = queue.Pop()
+	}
 }
