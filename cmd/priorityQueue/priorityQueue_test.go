@@ -118,10 +118,10 @@ func TestSortSmallStrings(t *testing.T) {
 
 func TestSortBigInts(t *testing.T) {
 	const (
-		BitTestSize = 1_000_000
+		BigTestSize = 1_000_000
 	)
 
-	arr := make([]int, BitTestSize)
+	arr := make([]int, BigTestSize)
 
 	for i := range arr {
 		arr[i] = rand.Int()
